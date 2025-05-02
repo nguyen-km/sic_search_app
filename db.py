@@ -7,7 +7,6 @@
 # Here's the initial structure of `db.py`:
 
 import pandas as pd
-from sqlalchemy import create_engine
 
 
 def fetch_sic_data():
