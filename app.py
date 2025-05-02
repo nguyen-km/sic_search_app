@@ -3,6 +3,9 @@ import pandas as pd
 from db import fetch_sic_data
 from model import SICSemanticMatcher
 
+def clean_text(text: str) -> str:
+    return text.replace('\u00A0', '').replace('\u200B', '').replace('\t', '').strip()
+
 # Load data from DB and initialize matcher
 st.title("🔍 SIC Code Finder")
 st.write("Paste a contract description or firm summary to get relevant SIC codes.")
@@ -24,6 +27,8 @@ if query:
     top_indices, scores = matcher.match(query, top_k=20)
     results = df.iloc[top_indices].copy()
     results['Similarity'] = (1 - scores).round(3)
+    results['sic8'] = results['sic8'].apply(clean_text)
+    results['Description'] = results['Description'].apply(clean_text)
 
     # Display results
     st.subheader("Top 20 Matches:")
