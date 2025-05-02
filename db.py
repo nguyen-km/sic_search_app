@@ -10,15 +10,6 @@ import psycopg2
 import pandas as pd
 from sqlalchemy import create_engine
 
-# Edit these credentials to match your setup
-def get_connection():
-    return psycopg2.connect(
-        dbname="Global-Resources",
-        user="bbcpg",
-        password="1999broad",
-        host="172.16.1.13",
-        port=5432
-    )
 
 def fetch_sic_data():
     query = '''
@@ -27,7 +18,7 @@ def fetch_sic_data():
         WHERE "Description" IS NOT NULL
     '''
     conn = get_connection()
-    df = pd.read_sql(query, conn)
+    df = pd.read_csv("sic_codes.csv")
     conn.close()
     df['sic8'] = df['sic8'].astype(str).str.strip()
     df['Description'] = df['Description'].str.strip()
