@@ -3,9 +3,6 @@ import pandas as pd
 from db import fetch_sic_data
 from model import SICSemanticMatcher
 
-def clean_text(text: str) -> str:
-    return text.replace('\u00A0', '').replace('\u200B', '').replace('\t', '').strip()
-
 # Load data from DB and initialize matcher
 st.title("🔍 SIC Code Finder")
 st.write("Paste a contract description or firm summary to get relevant SIC codes.")
@@ -27,17 +24,17 @@ if query:
     top_indices, scores = matcher.match(query, top_k=20)
     results = df.iloc[top_indices].copy()
     results['Similarity'] = (1 - scores).round(3)
-    results['sic8'] = results['sic8'].apply(clean_text)
-    results['Description'] = results['Description'].apply(clean_text)
 
     # Display results
     st.subheader("Top 20 Matches:")
     # st.dataframe(results[['sic8', 'Description', 'Similarity', 'L1', 'L2', 'L3', 'L4']])
 
     rows = []
-    for _, row in results[['sic8', 'Description']].iterrows():
+    for _, row in results[['sic8', 'Description', 'type']].iterrows():
         rows.append(f"<tr><td style='white-space:nowrap;padding:4px 10px;'>{row['sic8']}</td>"
-                    f"<td style='padding:4px 10px;'>{row['Description']}</td></tr>")
+                    f"<td style='padding:4px 10px;'>{row['Description']}</td>"
+                    f"<td style='padding:4px 10px;'>{row['type']}</td></tr>"
+                    )
 
     table_html = f"""
     <table style='border-collapse:collapse; width:100%; font-family:monospace;'>
@@ -45,6 +42,7 @@ if query:
         <tr>
         <th style='text-align:left; padding:4px 10px;'>SIC Code</th>
         <th style='text-align:left; padding:4px 10px;'>Description</th>
+        <th style='text-align:left; padding:4px 10px;'>Type</th>
         </tr>
     </thead>
     <tbody>
